@@ -391,20 +391,42 @@
                     </div>
                     <div class="form-group">
                         <label>Əlavə proyektlər:</label>
-                        <input type="number" id="additionalProjects" value="2" min="0" onchange="calculateSupabase()">
+                        <input type="number" id="additionalProjects" value="0" min="0" onchange="calculateSupabase()">
                     </div>
                     <div class="form-group">
-                        <label>Storage (GB):</label>
-                        <input type="number" id="storageGB" value="1" min="0" onchange="calculateSupabase()">
+                        <label>Database həcmi (GB):</label>
+                        <input type="number" id="storageGB" value="1" min="0" step="0.1" onchange="calculateSupabase()">
                     </div>
                     <div class="form-group">
                         <label>Bandwidth (GB):</label>
-                        <input type="number" id="bandwidthGB" value="1" min="0" onchange="calculateSupabase()">
+                        <input type="number" id="bandwidthGB" value="5" min="0" step="0.1" onchange="calculateSupabase()">
                     </div>
                 </div>
                 <div class="price-display">
                     <h3>Supabase Aylıq Xərc</h3>
                     <div class="amount" id="supabasePrice">$0.00</div>
+                </div>
+                <div class="price-breakdown" id="supabaseBreakdown">
+                    <div class="breakdown-item">
+                        <span>Əsas plan:</span>
+                        <span id="supabaseBasePlan">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Əlavə proyektlər:</span>
+                        <span id="supabaseProjects">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Database storage:</span>
+                        <span id="supabaseStorage">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Bandwidth:</span>
+                        <span id="supabaseBandwidth">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><strong>Cəmi Supabase:</strong></span>
+                        <span id="totalSupabase"><strong>$0.00</strong></span>
+                    </div>
                 </div>
             </div>
 
@@ -515,15 +537,15 @@
             
             let totalCost = plan;
             
-            // Additional projects cost (after first 2 for Pro plan)
+            // Additional projects cost - Pro plan includes 2 projects, additional ones cost $10 each
             if (plan > 0 && additionalProjects > 0) {
-                totalCost += additionalProjects * 25; // $25 per additional project
+                totalCost += additionalProjects * 10; // $10 per additional project
             }
             
             // Storage and bandwidth are typically included in base plans
             // Add custom pricing logic here if needed
             
-            document.getElementById('supabasePrice').textContent = `$${totalCost.toFixed(2)}`;
+            document.getElementById('supabasePrice').textContent = `${totalCost.toFixed(2)}`;
             calculateTotal();
         }
 
