@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Qiymət Hesablayıcısı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .service-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .service-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .service-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .openai-icon {
+            background: linear-gradient(135deg, #10A37F, #1A7F64);
+        }
+
+        .supabase-icon {
+            background: linear-gradient(135deg, #3ECF8E, #2E8B57);
+        }
+
+        .n8n-icon {
+            background: linear-gradient(135deg, #EA4B71, #C73650);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .model-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .model-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .model-option:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+
+        .model-option.active {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .model-option h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .model-option p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .price-display h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .price-display .amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .price-breakdown {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-item:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            padding-top: 8px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .total-summary {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .total-summary h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .total-summary .total-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cache-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .cache-info h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .cache-info p {
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-selector {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Platform Qiymət Hesablayıcısı</h1>
+            <p>n8n.cloud, OpenAI API və Supabase xidmətləri üçün aylıq xərclərinizi hesablayın</p>
+        </div>
+
+        <div class="content">
+            <!-- n8n.cloud Section -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon n8n-icon">n8n</div>
+                    n8n.cloud Avtomatlaşdırma
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Plan seçimi:</label>
+                        <select id="n8nPlan" onchange="calculateN8n()">
+                            <option value="20">Starter (İllik) - $20/ay</option>
+                            <option value="24">Starter (Aylıq) - $24/ay</option>
+                            <option value="50">Pro (İllik) - $50/ay</option>
+                            <option value="60">Pro (Aylıq) - $60/ay</option>
+                            <option value="custom">Enterprise - Fərdi qiymət</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="price-display">
+                    <h3>n8n.cloud Aylıq Xərc</h3>
+                    <div class="amount" id="n8nPrice">$20.00</div>
+                </div>
+            </div>
+
+            <!-- OpenAI Section -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon openai-icon">AI</div>
+                    OpenAI GPT-4o API
+                </div>
+                
+                <div class="model-selector">
+                    <div class="model-option active" onclick="selectModel('text')">
+                        <h3>🔤 GPT-4o Text</h3>
+                        <p>$2.50/1M input, $10.00/1M output</p>
+                    </div>
+                    <div class="model-option" onclick="selectModel('voice')">
+                        <h3>🎙️ GPT-4o Voice</h3>
+                        <p>$32.00/1M input, $64.00/1M output</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Aylıq müştəri sayı:</label>
+                        <input type="number" id="customerCount" value="100" onchange="calculateOpenAI()">
+                    </div>
+                    <div class="form-group">
+                        <label>Müştəri başına mesaj sayı:</label>
+                        <input type="number" id="messagesPerCustomer" value="10" onchange="calculateOpenAI()">
+                    </div>
+                    <div class="form-group">
+                        <label>Input faizi (%):</label>
+                        <input type="number" id="inputRatio" value="30" min="0" max="100" onchange="calculateOpenAI()">
+                    </div>
+                    <div class="form-group">
+                        <label>Cache faizi (%):</label>
+                        <input type="number" id="cacheRatio" value="40" min="0" max="100" onchange="calculateOpenAI()">
+                    </div>
+                    <div class="form-group">
+                        <label>Token/mesaj (Mindən çox):</label>
+                        <input type="number" id="tokensPerMessage" value="2000" onchange="calculateOpenAI()">
+                    </div>
+                </div>
+
+                <div class="cache-info">
+                    <h4>💡 Cache Optimizasiyası</h4>
+                    <p>Sabit kontekst (qaydalar, təlimatlar) cached input kimi göndərilərsə qiymət azalır. Cache faizi input faizindən götürülür.</p>
+                </div>
+
+                <div class="price-display">
+                    <h3>OpenAI API Aylıq Xərc</h3>
+                    <div class="amount" id="openaiPrice">$7.50</div>
+                </div>
+
+                <div class="price-breakdown" id="openaiBreakdown">
+                    <div class="breakdown-item">
+                        <span>Aylıq toplam token:</span>
+                        <span id="totalTokens">2,000,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Input token xərci:</span>
+                        <span id="inputCost">$1.50</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Cached input xərci:</span>
+                        <span id="cachedCost">$1.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Output token xərci:</span>
+                        <span id="outputCost">$14.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><strong>Cəmi OpenAI xərci:</strong></span>
+                        <span id="totalOpenAI"><strong>$7.50</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supabase Section -->
+            <div class="service-section">
+                <div class="service-title">
+                    <div class="service-icon supabase-icon">DB</div>
+                    Supabase Database
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Plan seçimi:</label>
+                        <select id="supabasePlan" onchange="calculateSupabase()">
+                            <option value="0">Free - $0/ay</option>
+                            <option value="25">Pro - $25/ay</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Əlavə proyektlər:</label>
+                        <input type="number" id="additionalProjects" value="2" min="0" onchange="calculateSupabase()">
+                    </div>
+                    <div class="form-group">
+                        <label>Storage (GB):</label>
+                        <input type="number" id="storageGB" value="1" min="0" onchange="calculateSupabase()">
+                    </div>
+                    <div class="form-group">
+                        <label>Bandwidth (GB):</label>
+                        <input type="number" id="bandwidthGB" value="1" min="0" onchange="calculateSupabase()">
+                    </div>
+                </div>
+                <div class="price-display">
+                    <h3>Supabase Aylıq Xərc</h3>
+                    <div class="amount" id="supabasePrice">$0.00</div>
+                </div>
+            </div>
+
+            <!-- Total Summary -->
+            <div class="total-summary">
+                <h2>📊 Ümumi Aylıq Xərc</h2>
+                <div class="total-amount" id="totalCost">$27.50</div>
+                <p>İllik xərc: <span id="yearlyCost">$330.00</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentModel = 'text';
+        
+        // Pricing constants
+        const pricing = {
+            text: {
+                input: 2.50,
+                cachedInput: 1.25,
+                output: 10.00
+            },
+            voice: {
+                input: 32.00,
+                cachedInput: 32.00, // Voice doesn't have cached pricing
+                output: 64.00
+            }
+        };
+
+        function selectModel(model) {
+            currentModel = model;
+            
+            // Update UI
+            document.querySelectorAll('.model-option').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.model-option').classList.add('active');
+            
+            // Hide/show cache input for voice model
+            const cacheGroup = document.querySelector('#cacheRatio').closest('.form-group');
+            if (model === 'voice') {
+                cacheGroup.style.display = 'none';
+                document.getElementById('cacheRatio').value = 0;
+            } else {
+                cacheGroup.style.display = 'flex';
+            }
+            
+            calculateOpenAI();
+        }
+
+        function calculateN8n() {
+            const planValue = document.getElementById('n8nPlan').value;
+            let price = 0;
+            
+            if (planValue !== 'custom') {
+                price = parseFloat(planValue);
+            }
+            
+            document.getElementById('n8nPrice').textContent = `$${price.toFixed(2)}`;
+            calculateTotal();
+        }
+
+        function calculateOpenAI() {
+            const customers = parseInt(document.getElementById('customerCount').value) || 0;
+            const messagesPerCustomer = parseInt(document.getElementById('messagesPerCustomer').value) || 0;
+            const inputRatio = parseInt(document.getElementById('inputRatio').value) || 0;
+            const cacheRatio = parseInt(document.getElementById('cacheRatio').value) || 0;
+            const tokensPerMessage = parseInt(document.getElementById('tokensPerMessage').value) || 0;
+            
+            // Calculate total monthly tokens
+            const totalMessages = customers * messagesPerCustomer;
+            const totalTokens = totalMessages * tokensPerMessage;
+            
+            // Calculate token distribution
+            const inputTokens = totalTokens * (inputRatio / 100);
+            const outputTokens = totalTokens * ((100 - inputRatio) / 100);
+            
+            // Calculate cached tokens (from input tokens)
+            const cachedTokens = inputTokens * (cacheRatio / 100);
+            const regularInputTokens = inputTokens - cachedTokens;
+            
+            // Get current model pricing
+            const currentPricing = pricing[currentModel];
+            
+            // Calculate costs
+            const inputCost = (regularInputTokens / 1000000) * currentPricing.input;
+            const cachedCost = (cachedTokens / 1000000) * currentPricing.cachedInput;
+            const outputCost = (outputTokens / 1000000) * currentPricing.output;
+            
+            const totalOpenAICost = inputCost + cachedCost + outputCost;
+            
+            // Update UI
+            document.getElementById('totalTokens').textContent = totalTokens.toLocaleString();
+            document.getElementById('inputCost').textContent = `$${inputCost.toFixed(2)}`;
+            document.getElementById('cachedCost').textContent = `$${cachedCost.toFixed(2)}`;
+            document.getElementById('outputCost').textContent = `$${outputCost.toFixed(2)}`;
+            document.getElementById('totalOpenAI').innerHTML = `<strong>$${totalOpenAICost.toFixed(2)}</strong>`;
+            document.getElementById('openaiPrice').textContent = `$${totalOpenAICost.toFixed(2)}`;
+            
+            calculateTotal();
+        }
+
+        function calculateSupabase() {
+            const plan = parseFloat(document.getElementById('supabasePlan').value) || 0;
+            const additionalProjects = parseInt(document.getElementById('additionalProjects').value) || 0;
+            const storageGB = parseInt(document.getElementById('storageGB').value) || 0;
+            const bandwidthGB = parseInt(document.getElementById('bandwidthGB').value) || 0;
+            
+            let totalCost = plan;
+            
+            // Additional projects cost (after first 2 for Pro plan)
+            if (plan > 0 && additionalProjects > 0) {
+                totalCost += additionalProjects * 25; // $25 per additional project
+            }
+            
+            // Storage and bandwidth are typically included in base plans
+            // Add custom pricing logic here if needed
+            
+            document.getElementById('supabasePrice').textContent = `$${totalCost.toFixed(2)}`;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const n8nCost = parseFloat(document.getElementById('n8nPrice').textContent.replace('$', '')) || 0;
+            const openaiCost = parseFloat(document.getElementById('openaiPrice').textContent.replace('$', '')) || 0;
+            const supabaseCost = parseFloat(document.getElementById('supabasePrice').textContent.replace('$', '')) || 0;
+            
+            const totalMonthlyCost = n8nCost + openaiCost + supabaseCost;
+            const totalYearlyCost = totalMonthlyCost * 12;
+            
+            document.getElementById('totalCost').textContent = `$${totalMonthlyCost.toFixed(2)}`;
+            document.getElementById('yearlyCost').textContent = `$${totalYearlyCost.toFixed(2)}`;
+        }
+
+        // Initialize calculations
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateN8n();
+            calculateOpenAI();
+            calculateSupabase();
+        });
+    </script>
+</body>
+</html>
