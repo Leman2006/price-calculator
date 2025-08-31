@@ -272,7 +272,7 @@
     <div class="container">
         <div class="header">
             <h1>💰 Platform Qiymət Hesablayıcısı</h1>
-            <p>n8n.cloud, OpenAI API və Supabase xidmətləri üçün aylıq xərclərinizi hesablayın</p>
+            <p>n8n.cloud, OpenAI API və Supabase xidmətləri üçün aylıq xərclərizi hesablayın</p>
         </div>
 
         <div class="content">
@@ -309,7 +309,7 @@
                 
                 <div class="model-selector">
                     <div class="model-option active" onclick="selectModel('text')">
-                        <h3>🔤 GPT-4o Text</h3>
+                        <h3>📤 GPT-4o Text</h3>
                         <p>$2.50/1M input, $10.00/1M output</p>
                     </div>
                     <div class="model-option" onclick="selectModel('voice')">
@@ -391,21 +391,22 @@
                     </div>
                     <div class="form-group">
                         <label>Əlavə proyektlər:</label>
-                        <input type="number" id="additionalProjects" value="0" min="0" onchange="calculateSupabase()">
+                        <input type="number" id="additionalProjects" value="2" min="0" onchange="calculateSupabase()">
                     </div>
                     <div class="form-group">
-                        <label>Database həcmi (GB):</label>
-                        <input type="number" id="storageGB" value="1" min="0" step="0.1" onchange="calculateSupabase()">
+                        <label>Storage (GB):</label>
+                        <input type="number" id="storageGB" value="1" min="0" onchange="calculateSupabase()">
                     </div>
                     <div class="form-group">
                         <label>Bandwidth (GB):</label>
-                        <input type="number" id="bandwidthGB" value="5" min="0" step="0.1" onchange="calculateSupabase()">
+                        <input type="number" id="bandwidthGB" value="1" min="0" onchange="calculateSupabase()">
                     </div>
                 </div>
                 <div class="price-display">
                     <h3>Supabase Aylıq Xərc</h3>
                     <div class="amount" id="supabasePrice">$0.00</div>
                 </div>
+
                 <div class="price-breakdown" id="supabaseBreakdown">
                     <div class="breakdown-item">
                         <span>Əsas plan:</span>
@@ -416,15 +417,15 @@
                         <span id="supabaseProjects">$0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span>Database storage:</span>
+                        <span>Storage əlavəsi:</span>
                         <span id="supabaseStorage">$0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span>Bandwidth:</span>
+                        <span>Bandwidth əlavəsi:</span>
                         <span id="supabaseBandwidth">$0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span><strong>Cəmi Supabase:</strong></span>
+                        <span><strong>Cəmi Supabase xərci:</strong></span>
                         <span id="totalSupabase"><strong>$0.00</strong></span>
                     </div>
                 </div>
@@ -536,16 +537,48 @@
             const bandwidthGB = parseInt(document.getElementById('bandwidthGB').value) || 0;
             
             let totalCost = plan;
+            let projectsCost = 0;
+            let storageOverage = 0;
+            let bandwidthOverage = 0;
             
-            // Additional projects cost - Pro plan includes 2 projects, additional ones cost $10 each
+            // Additional projects cost (after first 2 for Pro plan)
             if (plan > 0 && additionalProjects > 0) {
-                totalCost += additionalProjects * 10; // $10 per additional project
+                projectsCost = additionalProjects * 25; // $25 per additional project
+                totalCost += projectsCost;
             }
             
-            // Storage and bandwidth are typically included in base plans
-            // Add custom pricing logic here if needed
+            // Storage pricing
+            if (plan === 0) { // Free plan
+                if (storageGB > 0.5) { // Free plan includes 500MB
+                    storageOverage = (storageGB - 0.5) * 0.021; // $0.021 per GB
+                }
+            } else { // Pro plan
+                if (storageGB > 8) { // Pro plan includes 8GB
+                    storageOverage = (storageGB - 8) * 0.021; // $0.021 per GB
+                }
+            }
             
-            document.getElementById('supabasePrice').textContent = `${totalCost.toFixed(2)}`;
+            // Bandwidth pricing
+            if (plan === 0) { // Free plan
+                if (bandwidthGB > 2) { // Free plan includes 2GB
+                    bandwidthOverage = (bandwidthGB - 2) * 0.09; // $0.09 per GB
+                }
+            } else { // Pro plan
+                if (bandwidthGB > 250) { // Pro plan includes 250GB
+                    bandwidthOverage = (bandwidthGB - 250) * 0.09; // $0.09 per GB
+                }
+            }
+            
+            totalCost += storageOverage + bandwidthOverage;
+            
+            // Update breakdown
+            document.getElementById('supabaseBasePlan').textContent = `$${plan.toFixed(2)}`;
+            document.getElementById('supabaseProjects').textContent = `$${projectsCost.toFixed(2)}`;
+            document.getElementById('supabaseStorage').textContent = `$${storageOverage.toFixed(2)}`;
+            document.getElementById('supabaseBandwidth').textContent = `$${bandwidthOverage.toFixed(2)}`;
+            document.getElementById('totalSupabase').innerHTML = `<strong>$${totalCost.toFixed(2)}</strong>`;
+            
+            document.getElementById('supabasePrice').textContent = `$${totalCost.toFixed(2)}`;
             calculateTotal();
         }
 
